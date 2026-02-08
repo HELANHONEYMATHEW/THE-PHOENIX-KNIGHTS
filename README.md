@@ -18,6 +18,840 @@ This project explores the integration of Digital Twin (GenTwin) technology with 
             box-sizing: border-box;
         }
 
+        <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWaT Guardian AI - Intelligent Cybersecurity Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .animate-slideIn {
+            animation: slideIn 0.4s ease-out;
+        }
+
+        .animate-slideInRight {
+            animation: slideInRight 0.4s ease-out;
+        }
+
+        @keyframes pulse-slow {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .pulse-slow {
+            animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        .typing-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #64748b;
+            animation: pulse-slow 1.5s infinite;
+        }
+
+        .typing-indicator:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .chat-container {
+            height: 600px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .danger-badge {
+            animation: pulse-slow 2s infinite;
+        }
+
+        .tank {
+            position: relative;
+            width: 120px;
+            height: 180px;
+            border: 4px solid #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #f1f5f9 0%, #e2e8f0 100%);
+        }
+
+        .tank-water {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            transition: height 1s ease-out, background-color 0.5s ease;
+        }
+
+        .tank-water::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, transparent 0%, rgba(255, 255, 255, 0.3) 100%);
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #1e293b;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1e293b transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glow {
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+        }
+
+        .chat-bubble-user {
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+            border-radius: 18px 18px 4px 18px;
+        }
+
+        .chat-bubble-ai {
+            background: linear-gradient(135deg, #334155 0%, #475569 100%);
+            border-radius: 18px 18px 18px 4px;
+        }
+
+        .quick-action-btn {
+            transition: all 0.2s ease;
+        }
+
+        .quick-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen text-white">
+    <!-- Header -->
+    <header class="glass-effect border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl shadow-lg glow">
+                        <i class="fas fa-shield-halved text-white text-3xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-4xl font-bold text-white">
+                            SWaT Guardian AI
+                        </h1>
+                        <p class="text-cyan-300 text-sm mt-1 mono">Intelligent Cybersecurity Defense System</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <div class="text-xs text-slate-400">AI Status</div>
+                        <div class="text-sm font-semibold text-emerald-400 flex items-center gap-2">
+                            <i class="fas fa-circle text-emerald-500 text-xs pulse-slow"></i>
+                            Active & Monitoring
+                        </div>
+                    </div>
+                    <div id="current-danger-badge" class="px-4 py-2 rounded-lg bg-emerald-500/20 border border-emerald-500/30">
+                        <div class="text-xs text-emerald-300">Danger Level</div>
+                        <div class="text-lg font-bold text-emerald-400 mono">LOW</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column: System Status -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- System Health -->
+                <div class="glass-effect rounded-xl p-6 border border-white/10">
+                    <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                        <i class="fas fa-heartbeat text-cyan-400"></i>
+                        System Health
+                    </h3>
+                    <div class="text-center">
+                        <div id="system-health-display" class="text-6xl font-bold text-emerald-400 mono">92%</div>
+                        <div class="text-sm text-slate-400 mt-2">Overall Infrastructure Status</div>
+                    </div>
+                    <div class="mt-6 space-y-3" id="process-stages-mini"></div>
+                </div>
+
+                <!-- Real-time Alerts -->
+                <div class="glass-effect rounded-xl p-6 border border-white/10">
+                    <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                        <i class="fas fa-bell text-yellow-400"></i>
+                        Real-time Alerts
+                    </h3>
+                    <div id="alerts-container" class="space-y-2 max-h-64 overflow-y-auto"></div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="glass-effect rounded-xl p-6 border border-white/10">
+                    <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                        <i class="fas fa-bolt text-purple-400"></i>
+                        Quick Actions
+                    </h3>
+                    <div class="space-y-2">
+                        <button onclick="quickAction('scan')" class="quick-action-btn w-full px-4 py-3 bg-cyan-600/20 hover:bg-cyan-600/30 border border-cyan-500/30 rounded-lg text-left text-sm text-white flex items-center gap-3">
+                            <i class="fas fa-radar text-cyan-400"></i>
+                            <span>Run Full System Scan</span>
+                        </button>
+                        <button onclick="quickAction('attack')" class="quick-action-btn w-full px-4 py-3 bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 rounded-lg text-left text-sm text-white flex items-center gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-400"></i>
+                            <span>Simulate Attack</span>
+                        </button>
+                        <button onclick="quickAction('status')" class="quick-action-btn w-full px-4 py-3 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 rounded-lg text-left text-sm text-white flex items-center gap-3">
+                            <i class="fas fa-chart-line text-blue-400"></i>
+                            <span>Detailed Status Report</span>
+                        </button>
+                        <button onclick="quickAction('vulnerabilities')" class="quick-action-btn w-full px-4 py-3 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 rounded-lg text-left text-sm text-white flex items-center gap-3">
+                            <i class="fas fa-bug text-purple-400"></i>
+                            <span>Analyze Vulnerabilities</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center & Right: AI Chat Interface -->
+            <div class="lg:col-span-2">
+                <div class="glass-effect rounded-xl p-6 border border-white/10 h-full flex flex-col">
+                    <!-- Chat Header -->
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
+                                <i class="fas fa-robot text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold text-white">Guardian AI Assistant</h2>
+                                <p class="text-sm text-cyan-300 mono">Threat Analysis & Response System</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-xs text-emerald-400 mono">
+                                <i class="fas fa-circle text-emerald-500 text-xs mr-1"></i>
+                                Online
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Messages -->
+                    <div id="chat-container" class="chat-container flex-1 space-y-4 mb-4 pr-2">
+                        <!-- Initial greeting -->
+                        <div class="flex gap-3 animate-slideIn">
+                            <div class="w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-robot text-white text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="chat-bubble-ai text-white p-4 shadow-lg">
+                                    <p class="text-sm leading-relaxed">
+                                        👋 Hello! I'm <strong>SWaT Guardian AI</strong>, your intelligent cybersecurity assistant.
+                                    </p>
+                                    <p class="text-sm leading-relaxed mt-2">
+                                        I continuously monitor all 6 process stages of the water treatment system and can instantly assess danger levels, detect anomalies, and recommend mitigations.
+                                    </p>
+                                    <p class="text-sm leading-relaxed mt-2">
+                                        <strong class="text-cyan-300">Current Status:</strong> System operating normally with <span class="text-emerald-400 font-semibold">LOW</span> danger level.
+                                    </p>
+                                </div>
+                                <div class="text-xs text-slate-500 mt-1 ml-2">Just now</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Typing Indicator -->
+                    <div id="typing-indicator" class="hidden flex gap-3 mb-4">
+                        <div class="w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-robot text-white text-sm"></i>
+                        </div>
+                        <div class="chat-bubble-ai p-4">
+                            <div class="flex gap-1">
+                                <div class="typing-indicator"></div>
+                                <div class="typing-indicator"></div>
+                                <div class="typing-indicator"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Suggested Questions -->
+                    <div id="suggested-questions" class="mb-4">
+                        <div class="text-xs text-slate-400 mb-2 ml-2">Suggested questions:</div>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="askQuestion('What is the current danger level?')" class="px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs text-white transition-all">
+                                What is the current danger level?
+                            </button>
+                            <button onclick="askQuestion('Which stage is most vulnerable?')" class="px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs text-white transition-all">
+                                Which stage is most vulnerable?
+                            </button>
+                            <button onclick="askQuestion('Explain P3 warning status')" class="px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs text-white transition-all">
+                                Explain P3 warning status
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Chat Input -->
+                    <div class="flex gap-3">
+                        <input 
+                            type="text" 
+                            id="chat-input" 
+                            placeholder="Ask Guardian AI about system status, threats, or recommendations..."
+                            class="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20"
+                            onkeypress="handleKeyPress(event)"
+                        >
+                        <button 
+                            onclick="sendMessage()" 
+                            class="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 rounded-lg text-white font-semibold transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                        >
+                            <i class="fas fa-paper-plane"></i>
+                            Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Visualization -->
+        <div class="mt-6 glass-effect rounded-xl p-6 border border-white/10">
+            <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <i class="fas fa-diagram-project text-cyan-400"></i>
+                Digital Twin Visualization
+            </h3>
+            <div class="flex items-center justify-around">
+                <!-- Tank 1 -->
+                <div class="flex flex-col items-center">
+                    <div class="text-sm font-semibold text-slate-300 mb-2">Raw Water Tank</div>
+                    <div class="tank">
+                        <div id="tank1-water" class="tank-water bg-emerald-500" style="height: 50%">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span id="tank1-level" class="text-2xl font-bold text-slate-900 drop-shadow-lg">50%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-slate-400 mono">LIT301</div>
+                </div>
+
+                <!-- Flow Arrow -->
+                <div class="flex flex-col items-center">
+                    <i class="fas fa-chevron-right text-cyan-400 text-3xl pulse-slow"></i>
+                    <div class="text-xs text-slate-400 mt-1 mono">MV101</div>
+                </div>
+
+                <!-- Tank 2 -->
+                <div class="flex flex-col items-center">
+                    <div class="text-sm font-semibold text-slate-300 mb-2">UF Feed Tank</div>
+                    <div class="tank">
+                        <div id="tank2-water" class="tank-water bg-emerald-500" style="height: 60%">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span id="tank2-level" class="text-2xl font-bold text-slate-900 drop-shadow-lg">60%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-slate-400 mono">LIT101</div>
+                </div>
+
+                <!-- Flow Arrow -->
+                <div class="flex flex-col items-center">
+                    <i class="fas fa-chevron-right text-cyan-400 text-3xl pulse-slow"></i>
+                    <div class="text-xs text-slate-400 mt-1 mono">P301</div>
+                </div>
+
+                <!-- Tank 3 -->
+                <div class="flex flex-col items-center">
+                    <div class="text-sm font-semibold text-slate-300 mb-2">RO Feed Tank</div>
+                    <div class="tank">
+                        <div id="tank3-water" class="tank-water bg-emerald-500" style="height: 45%">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span id="tank3-level" class="text-2xl font-bold text-slate-900 drop-shadow-lg">45%</span>
+                            </div>
+                            <div id="tank3-alert" class="absolute top-2 left-2 hidden">
+                                <i class="fas fa-exclamation-triangle text-red-600 text-xl animate-bounce"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-xs text-slate-400 mono">LIT401</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Mock Data
+        const processStages = [
+            { id: 'P1', name: 'Raw Water Intake', status: 'normal', health: 98 },
+            { id: 'P2', name: 'Chemical Dosing', status: 'normal', health: 95 },
+            { id: 'P3', name: 'Ultrafiltration', status: 'warning', health: 72 },
+            { id: 'P4', name: 'Dechlorination', status: 'normal', health: 94 },
+            { id: 'P5', name: 'RO Treatment', status: 'normal', health: 96 },
+            { id: 'P6', name: 'Final Backwash', status: 'normal', health: 97 }
+        ];
+
+        // State
+        let currentDangerLevel = 'LOW';
+        let systemHealth = 92;
+        let chatHistory = [];
+        let alertLog = [];
+        let tankAnimationInterval = null;
+
+        // AI Response Templates
+        const aiResponses = {
+            dangerLevel: {
+                low: "✅ <strong>Danger Level: LOW</strong><br><br>All systems operating within normal parameters. No immediate threats detected. I'm continuously monitoring all sensors and actuators for any anomalies.",
+                medium: "⚠️ <strong>Danger Level: MEDIUM</strong><br><br>I've detected some irregularities in the system. Stage P3 (Ultrafiltration) is showing warning signs with 72% health. This could indicate sensor drift or early-stage attack patterns. I recommend increased monitoring.",
+                high: "🚨 <strong>Danger Level: HIGH</strong><br><br>ALERT: Coordinated attack detected across multiple sensors! LIT301 and MV101 are showing synchronized anomalies. Tank levels rising beyond safe limits. Immediate intervention required!",
+                critical: "🔴 <strong>Danger Level: CRITICAL</strong><br><br>EMERGENCY: System under active cyber-attack! Multiple process stages compromised. Physical safety limits exceeded. Executing emergency shutdown protocols and alerting operators immediately!"
+            },
+            vulnerabilities: "Based on my analysis, <strong>P3 (Ultrafiltration)</strong> is the most vulnerable stage:<br><br>• <strong>Monitoring Risk:</strong> 70%<br>• <strong>Control Risk:</strong> 80%<br>• <strong>Actuation Risk:</strong> 90%<br><br>This stage lacks adequate redundancy in sensor validation and has weak rate-of-change constraints. An attacker could manipulate tank levels without immediate detection.",
+            p3Warning: "P3 (Ultrafiltration) is currently at <strong>WARNING status</strong> with 72% health due to:<br><br>• Elevated sensor noise on LIT301<br>• Irregular valve response patterns<br>• Flow rate inconsistencies with expected digital twin predictions<br><br>While not yet critical, this warrants close monitoring. I recommend running correlation analysis across all P3 sensors.",
+            statusReport: "📊 <strong>Comprehensive System Status</strong><br><br><strong>Overall Health:</strong> 92%<br><strong>Active Alerts:</strong> 1 warning<br><strong>Anomalies Detected (24h):</strong> 3<br><br><strong>Stage Status:</strong><br>• P1-P2: Optimal ✅<br>• P3: Warning ⚠️<br>• P4-P6: Optimal ✅<br><br><strong>Recommendations:</strong><br>1. Investigate P3 sensor calibration<br>2. Review access logs for unusual patterns<br>3. Consider deploying additional monitoring on ultrafiltration stage",
+            scan: "🔍 <strong>Full System Scan Initiated</strong><br><br>Scanning all 51 sensors and actuators across 6 process stages...<br><br><strong>Results:</strong><br>✅ 48 components: Normal<br>⚠️ 2 components: Needs attention (LIT301, FIT301)<br>❌ 1 component: Degraded performance (P3 pump)<br><br><strong>Threat Assessment:</strong> No active attacks detected, but sensor drift patterns suggest potential reconnaissance activity.",
+            attack: "⚡ <strong>Attack Simulation Executed</strong><br><br>Simulating <strong>Multi-Sensor Coordinated Attack</strong> at 75% intensity...<br><br><strong>AI Analysis:</strong><br>Detected coordinated anomalies across LIT301, FIT301, and MV101. Attack pattern indicates attempt to overflow Tank 3 while masking sensor readings. <br><br><strong>Predicted Impact:</strong> Tank level exceeding safe limits by 18% within 2.5 minutes.<br><br><strong>Recommended Response:</strong> Emergency valve closure + operator alert activated.",
+            mitigations: "🛡️ <strong>Recommended Mitigations</strong><br><br>1. <strong>Multi-Sensor Correlation (94% effective)</strong><br>   Deploy AI model to detect coordinated anomalies<br><br>2. <strong>Rate-of-Change Limits (97% effective)</strong><br>   Implement physical constraints on tank levels<br><br>3. <strong>Real-time Dashboard (85% effective)</strong><br>   Alert operators when digital twin diverges from actuals<br><br>Applying all three would increase system resilience by +36%.",
+            help: "🤖 <strong>How I Can Help</strong><br><br>I can assist you with:<br><br>• Assess current danger levels and threat landscape<br>• Explain specific stage status and health metrics<br>• Identify vulnerabilities across the system<br>• Simulate attack scenarios and predict impacts<br>• Recommend security mitigations<br>• Generate comprehensive status reports<br>• Analyze sensor data for anomalies<br><br>Just ask me anything about the SWaT system security!"
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderProcessStagesMini();
+            startTankAnimation();
+            addAlert('System initialized', 'All sensors operational', 'info');
+            addAlert('P3 Warning', 'Ultrafiltration stage health at 72%', 'warning');
+        });
+
+        // Render Mini Process Stages
+        function renderProcessStagesMini() {
+            const container = document.getElementById('process-stages-mini');
+            container.innerHTML = processStages.map(stage => {
+                const statusColors = {
+                    normal: 'bg-emerald-500',
+                    warning: 'bg-amber-500',
+                    attack: 'bg-red-500'
+                };
+                const statusIcons = {
+                    normal: 'fa-check-circle',
+                    warning: 'fa-exclamation-circle',
+                    attack: 'fa-times-circle'
+                };
+                
+                return `
+                    <div class="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg ${statusColors[stage.status]} flex items-center justify-center">
+                                <i class="fas ${statusIcons[stage.status]} text-white text-sm"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold text-cyan-400 mono">${stage.id}</div>
+                                <div class="text-xs text-slate-300">${stage.name}</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-bold ${stage.health > 90 ? 'text-emerald-400' : stage.health > 70 ? 'text-amber-400' : 'text-red-400'} mono">
+                                ${stage.health}%
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Add Alert
+        function addAlert(title, message, type) {
+            const container = document.getElementById('alerts-container');
+            const colors = {
+                info: 'border-blue-500/30 bg-blue-500/10',
+                warning: 'border-amber-500/30 bg-amber-500/10',
+                danger: 'border-red-500/30 bg-red-500/10'
+            };
+            const icons = {
+                info: 'fa-info-circle text-blue-400',
+                warning: 'fa-exclamation-triangle text-amber-400',
+                danger: 'fa-exclamation-circle text-red-400'
+            };
+            
+            const alert = document.createElement('div');
+            alert.className = `p-3 rounded-lg border ${colors[type]} animate-fadeIn`;
+            alert.innerHTML = `
+                <div class="flex items-start gap-2">
+                    <i class="fas ${icons[type]} text-sm mt-0.5"></i>
+                    <div class="flex-1">
+                        <div class="text-xs font-semibold text-white">${title}</div>
+                        <div class="text-xs text-slate-400 mt-1">${message}</div>
+                    </div>
+                </div>
+            `;
+            
+            container.insertBefore(alert, container.firstChild);
+            alertLog.push({ title, message, type, timestamp: new Date() });
+            
+            // Keep only last 5 alerts
+            while (container.children.length > 5) {
+                container.removeChild(container.lastChild);
+            }
+        }
+
+        // Handle Key Press
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Send Message
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            addChatMessage(message, 'user');
+            input.value = '';
+            
+            // Show typing indicator
+            document.getElementById('typing-indicator').classList.remove('hidden');
+            document.getElementById('suggested-questions').classList.add('hidden');
+            
+            // Generate AI response
+            setTimeout(() => {
+                const response = generateAIResponse(message);
+                document.getElementById('typing-indicator').classList.add('hidden');
+                addChatMessage(response.text, 'ai');
+                
+                // Update danger level if changed
+                if (response.dangerLevel) {
+                    updateDangerLevel(response.dangerLevel);
+                }
+                
+                // Add alert if needed
+                if (response.alert) {
+                    addAlert(response.alert.title, response.alert.message, response.alert.type);
+                }
+            }, 1500);
+        }
+
+        // Ask Question (from suggested)
+        function askQuestion(question) {
+            document.getElementById('chat-input').value = question;
+            sendMessage();
+        }
+
+        // Generate AI Response
+        function generateAIResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            // Danger level queries
+            if (lowerMessage.includes('danger level') || lowerMessage.includes('threat level') || lowerMessage.includes('how safe')) {
+                return {
+                    text: aiResponses.dangerLevel[currentDangerLevel.toLowerCase()],
+                    dangerLevel: currentDangerLevel
+                };
+            }
+            
+            // Vulnerability queries
+            if (lowerMessage.includes('vulnerab') || lowerMessage.includes('weak') || lowerMessage.includes('risk')) {
+                return {
+                    text: aiResponses.vulnerabilities
+                };
+            }
+            
+            // P3 specific queries
+            if (lowerMessage.includes('p3') || lowerMessage.includes('ultrafiltration') || lowerMessage.includes('warning')) {
+                return {
+                    text: aiResponses.p3Warning
+                };
+            }
+            
+            // Status report
+            if (lowerMessage.includes('status') || lowerMessage.includes('report') || lowerMessage.includes('overview')) {
+                return {
+                    text: aiResponses.statusReport
+                };
+            }
+            
+            // Scan
+            if (lowerMessage.includes('scan') || lowerMessage.includes('check')) {
+                return {
+                    text: aiResponses.scan
+                };
+            }
+            
+            // Attack simulation
+            if (lowerMessage.includes('attack') || lowerMessage.includes('simulate')) {
+                return {
+                    text: aiResponses.attack,
+                    dangerLevel: 'HIGH',
+                    alert: {
+                        title: 'Attack Simulated',
+                        message: 'Multi-sensor coordinated attack detected',
+                        type: 'danger'
+                    }
+                };
+            }
+            
+            // Mitigations
+            if (lowerMessage.includes('mitigat') || lowerMessage.includes('fix') || lowerMessage.includes('solution') || lowerMessage.includes('recommend')) {
+                return {
+                    text: aiResponses.mitigations
+                };
+            }
+            
+            // Help
+            if (lowerMessage.includes('help') || lowerMessage.includes('what can you')) {
+                return {
+                    text: aiResponses.help
+                };
+            }
+            
+            // Default response
+            return {
+                text: `I understand you're asking about "${message}". Let me analyze the system...<br><br>Based on current data, I can provide information about:<br>• System danger levels and threats<br>• Vulnerabilities in specific process stages<br>• Attack simulations and predictions<br>• Recommended mitigations<br><br>Could you please be more specific about what aspect you'd like me to analyze?`
+            };
+        }
+
+        // Add Chat Message
+        function addChatMessage(text, sender) {
+            const container = document.getElementById('chat-container');
+            const isUser = sender === 'user';
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex gap-3 ${isUser ? 'justify-end animate-slideInRight' : 'animate-slideIn'}`;
+            
+            if (isUser) {
+                messageDiv.innerHTML = `
+                    <div class="flex-1 max-w-md">
+                        <div class="chat-bubble-user text-white p-4 shadow-lg">
+                            <p class="text-sm leading-relaxed">${text}</p>
+                        </div>
+                        <div class="text-xs text-slate-500 mt-1 mr-2 text-right">Just now</div>
+                    </div>
+                    <div class="w-8 h-8 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-user text-white text-sm"></i>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-robot text-white text-sm"></i>
+                    </div>
+                    <div class="flex-1 max-w-2xl">
+                        <div class="chat-bubble-ai text-white p-4 shadow-lg">
+                            <p class="text-sm leading-relaxed">${text}</p>
+                        </div>
+                        <div class="text-xs text-slate-500 mt-1 ml-2">Just now</div>
+                    </div>
+                `;
+            }
+            
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+            
+            chatHistory.push({ text, sender, timestamp: new Date() });
+        }
+
+        // Update Danger Level
+        function updateDangerLevel(level) {
+            currentDangerLevel = level;
+            const badge = document.getElementById('current-danger-badge');
+            
+            const colors = {
+                LOW: { bg: 'bg-emerald-500/20', border: 'border-emerald-500/30', text: 'text-emerald-400' },
+                MEDIUM: { bg: 'bg-amber-500/20', border: 'border-amber-500/30', text: 'text-amber-400' },
+                HIGH: { bg: 'bg-red-500/20', border: 'border-red-500/30', text: 'text-red-400' },
+                CRITICAL: { bg: 'bg-red-600/30', border: 'border-red-600/50', text: 'text-red-300' }
+            };
+            
+            const color = colors[level];
+            badge.className = `px-4 py-2 rounded-lg ${color.bg} border ${color.border} danger-badge`;
+            badge.innerHTML = `
+                <div class="text-xs ${color.text.replace('400', '300')}">Danger Level</div>
+                <div class="text-lg font-bold ${color.text} mono">${level}</div>
+            `;
+            
+            // Update system health based on danger level
+            const healthMap = { LOW: 92, MEDIUM: 75, HIGH: 58, CRITICAL: 32 };
+            systemHealth = healthMap[level];
+            document.getElementById('system-health-display').textContent = `${systemHealth}%`;
+            document.getElementById('system-health-display').className = `text-6xl font-bold ${color.text} mono`;
+        }
+
+        // Quick Actions
+        function quickAction(action) {
+            const actions = {
+                scan: 'Run a full system scan',
+                attack: 'Simulate an attack scenario',
+                status: 'Generate a detailed status report',
+                vulnerabilities: 'Analyze system vulnerabilities'
+            };
+            
+            document.getElementById('chat-input').value = actions[action];
+            sendMessage();
+        }
+
+        // Tank Animation
+        function startTankAnimation() {
+            if (tankAnimationInterval) clearInterval(tankAnimationInterval);
+            
+            tankAnimationInterval = setInterval(() => {
+                const dangerMultiplier = { LOW: 1, MEDIUM: 1.5, HIGH: 2.5, CRITICAL: 3.5 };
+                const intensity = dangerMultiplier[currentDangerLevel] || 1;
+                
+                if (currentDangerLevel === 'LOW') {
+                    updateTank('tank1', 48 + Math.random() * 4, '#10b981');
+                    updateTank('tank2', 58 + Math.random() * 4, '#10b981');
+                    updateTank('tank3', 43 + Math.random() * 4, '#10b981');
+                    document.getElementById('tank3-alert').classList.add('hidden');
+                } else {
+                    updateTank('tank1', 48 + Math.random() * 15 * (intensity - 1), getColorForLevel(48 + Math.random() * 15 * (intensity - 1)));
+                    updateTank('tank2', 58 + Math.random() * 20 * (intensity - 1), getColorForLevel(58 + Math.random() * 20 * (intensity - 1)));
+                    const level3 = 43 + Math.random() * 40 * (intensity - 1);
+                    updateTank('tank3', level3, getColorForLevel(level3));
+                    
+                    if (level3 > 75) {
+                        document.getElementById('tank3-alert').classList.remove('hidden');
+                    } else {
+                        document.getElementById('tank3-alert').classList.add('hidden');
+                    }
+                }
+            }, 1200);
+        }
+
+        function updateTank(id, level, color) {
+            const water = document.getElementById(`${id}-water`);
+            const levelText = document.getElementById(`${id}-level`);
+            water.style.height = `${Math.min(level, 100)}%`;
+            water.style.backgroundColor = color;
+            levelText.textContent = `${Math.round(Math.min(level, 100))}%`;
+        }
+
+        function getColorForLevel(level) {
+            if (level > 85) return '#ef4444';
+            if (level > 70) return '#f59e0b';
+            return '#10b981';
+        }
+    </script>
+</body>
+</html>
+
         :root {
             --neon-cyan: #00ffff;
             --neon-magenta: #ff00ff;
